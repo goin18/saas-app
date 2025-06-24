@@ -81,3 +81,10 @@ interface CompanionComponentProps {
   voice: string;
   style: string;
 }
+
+interface CompanionComponentObjectProps {
+  companionId: string;
+  companion: Companion;
+  userName: string;
+  userImage: string;
+}
