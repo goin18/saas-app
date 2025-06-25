@@ -1,3 +1,4 @@
+import { getSubjectColor } from '@/lib/utils';
 import Image from 'next/image';
 import Link from 'next/link';
 import React from 'react'
@@ -8,12 +9,12 @@ interface CompaninoCardProps {
     name: string;
     topic: string;
     duration: number;
-    color: string;
+    // color: string;
 }
 
-const CompaninoCard = ({id, subject, name, topic, duration, color}: CompaninoCardProps) => {
+const CompaninoCard = ({id, subject, name, topic, duration}: CompaninoCardProps) => {
   return (
-    <article className='companion-card' style={{ backgroundColor: color }}>
+    <article className='companion-card' style={{ backgroundColor: getSubjectColor(subject) }}>
         <div className='flex justify-between items-center'>
             <div className='subject-badge'>{subject}</div>
             <button className='companion-bookmark'>
