@@ -43,6 +43,20 @@ export const getAllCompanions = async ({ limit = 10, page = 1, subject, topic }:
     return companions;
 }
 
+export const getUserSessions = async (userId: string, limit = 10) => {
+    const supabase = createSupabaseClient();
+    const { data, error } = await supabase
+        .from('session_history')
+        .select(`companions:companion_id (*)`)
+        .eq('user_id', userId)
+        .order('created_at', { ascending: false })
+        .limit(limit)
+
+    if(error) throw new Error(error.message);
+
+    return data.map(({ companions }) => companions);
+}
+
 export const getCompanion = async (id: string) => {
     const supabase = createSupabaseClient();
 
@@ -94,3 +108,51 @@ export const getUserCompanions = async (userId: string) => {
 
     return data;
 }
+
+// Bookmarks
+export const addBookmark = async (companionId: string, path: string) => {
+    const { userId } = await auth();
+    if (!userId) return;
+    const supabase = createSupabaseClient();
+    const { data, error } = await supabase.from("bookmarks").insert({
+      companion_id: companionId,
+      user_id: userId,
+    });
+    if (error) {
+      throw new Error(error.message);
+    }
+    // Revalidate the path to force a re-render of the page
+  
+    revalidatePath(path);
+    return data;
+  };
+  
+  export const removeBookmark = async (companionId: string, path: string) => {
+    const { userId } = await auth();
+    if (!userId) return;
+    const supabase = createSupabaseClient();
+    const { data, error } = await supabase
+      .from("bookmarks")
+      .delete()
+      .eq("companion_id", companionId)
+      .eq("user_id", userId);
+    if (error) {
+      throw new Error(error.message);
+    }
+    revalidatePath(path);
+    return data;
+  };
+  
+  // It's almost the same as getUserCompanions, but it's for the bookmarked companions
+  export const getBookmarkedCompanions = async (userId: string) => {
+    const supabase = createSupabaseClient();
+    const { data, error } = await supabase
+      .from("bookmarks")
+      .select(`companions:companion_id (*)`) // Notice the (*) to get all the companion data
+      .eq("user_id", userId);
+    if (error) {
+      throw new Error(error.message);
+    }
+    // We don't need the bookmarks data, so we return only the companions
+    return data.map(({ companions }) => companions);
+  };
