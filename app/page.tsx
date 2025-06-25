@@ -1,17 +1,14 @@
-import { Button } from '@/components/ui/button'
 import CompaninoCard from '@/components/CompaninoCard'
 import React from 'react'
 import CompanionList from '@/components/CompanionList'
 import CTA from '@/components/CTA'
-import { recentSessions } from '@/constants'
 import { getAllCompanions, getRecentSessions } from '@/lib/actions/companion.actions'
+
+export const dynamic = 'force-dynamic'
 
 const Page = async () => {
   const companions = await getAllCompanions({limit: 3})
   const recentSessionsCompanions = await getRecentSessions(10)
-
-  console.log(companions)
-  console.log(recentSessionsCompanions)
 
   return (
     <main>
